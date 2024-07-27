@@ -27,6 +27,29 @@
     (message (gethash 'tags (car book-hash)))
     ))
 
+(defun konger-blog-make-book-block ()
+  "Create a block element for a book."
+  (let* ((book-html (konger-blog-make-block "<div class='cover'>
+    <img src='' alt='cover-img'>
+  </div>
+  <div class='info'>
+    <h3><strong>Title</strong> by <strong>Author</strong></h3>
+    <div class='logbook'>
+      <strong>read:</strong>
+      date through date
+    </div>
+    <div class='comment'>
+      text
+    </div>
+  </div>" :class "book-block")))
+    book-html))
+
+(defun konger-blog-make-block (content &rest args)
+  "Create a block element, with settings in ARGS."
+  (let* ((class (string-join (flatten-list (push "block" (plist-get args :class)))
+                             " ")))
+    (format "<div class='%s'>%s</div>"
+            class content)))
 
 (provide 'konger-blog)
 
