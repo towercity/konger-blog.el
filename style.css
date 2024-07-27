@@ -1,0 +1,23 @@
+body {
+    --color-background: #ffecff;
+    --color-foreground: #01008c;
+}
+
+.block {
+    border: 1px solid var(--color-foreground);
+    background: var(--color-background);
+    filter: drop-shadow(.3em .3em 0em var(--color-foreground));
+}
+
+.book-block {
+    display: flex;
+    gap: 1em;
+}
+
+.book-block .info {
+    padding-block: 1em;
+}
+
+.book-block .info h3 {
+    margin: 0;
+}
