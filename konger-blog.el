@@ -29,11 +29,14 @@
 
 (defun konger-blog-make-book-block (&rest args)
   "Create a block element for a book, with details in ARGS."
-  (let* ((cover-img (plist-get args :cover))
-         (title (plist-get args :title))
-         (author (plist-get args :author))
-         (start-date (plist-get args :start-date))
-         (comment (plist-get args :comment))
+  (let* ((cover-img (or (plist-get args :cover) ""))
+         (title (or (plist-get args :title) ""))
+         (author (or (plist-get args :author) ""))
+         (start-date (or (plist-get args :start-date) ""))
+         (comment (or (plist-get args :comment) ""))
+         (include-styles? (if (plist-get args :style)
+                              (konger-blog-get-style-tag)
+                            ""))
          (book-html (konger-blog-make-block (format
                                              "<div class='cover'>
     <img src='%s' alt='cover-img'>
@@ -47,7 +50,7 @@
     <div class='comment'>
       %s
     </div>
-  </div>" cover-img title author start-date comment) :class "book-block")))
+  </div>%s" cover-img title author start-date comment include-styles?) :class "book-block")))
     book-html))
 
 (defun konger-blog-make-block (content &rest args)
@@ -56,6 +59,11 @@
                              " ")))
     (format "<div class='%s'>%s</div>"
             class content)))
+
+(defun konger-blog-get-style-tag ()
+  "Return the content of the local style.css file, wrapped in a <style> tag."
+  (format "<style>%s</style>"
+          (f-read "~/.emacs.d/my-packages/konger-blog/style.css")))
 
 (provide 'konger-blog)
 
