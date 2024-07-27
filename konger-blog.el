@@ -27,6 +27,19 @@
     (message (gethash 'tags (car book-hash)))
     ))
 
+(defun konger-blog-get-book-block-from-file (file &rest args)
+  "Create a book block from FILE, with settings ARGS."
+  (interactive "fWhich file: ")
+  (let* ((book-hash (obsidian--file-front-matter file)))
+    ;; make sure we have a book before we go, ok
+    (if (seq-contains-p (gethash 'tags book-hash) "book")
+        (konger-blog-make-book-block :cover (gethash 'cover book-hash)
+                                     :title (gethash 'title book-hash)
+                                     :author (gethash 'author book-hash)
+                                     :start-date (gethash 'start-date book-hash)
+                                     :styles? (plist-get args :styles?))
+      (user-error "%s" "Not a book note"))))
+
 (defun konger-blog-make-book-block (&rest args)
   "Create a block element for a book, with details in ARGS."
   (let* ((cover-img (or (plist-get args :cover) ""))
