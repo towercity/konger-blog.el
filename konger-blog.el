@@ -34,7 +34,7 @@
          (author (or (plist-get args :author) ""))
          (start-date (or (plist-get args :start-date) ""))
          (comment (or (plist-get args :comment) ""))
-         (include-styles? (if (plist-get args :style)
+         (styles (if (plist-get args :styles?)
                               (konger-blog-get-style-tag)
                             ""))
          (book-html (konger-blog-make-block (format
@@ -50,11 +50,11 @@
     <div class='comment'>
       %s
     </div>
-  </div>%s" cover-img title author start-date comment include-styles?) :class "book-block")))
+  </div>%s" cover-img title author start-date comment styles) :class "book-block")))
     book-html))
 
 (defun konger-blog-make-block (content &rest args)
-  "Create a block element, with settings in ARGS."
+  "Create a block element containg CONTENT, with settings in ARGS."
   (let* ((class (string-join (flatten-list (push "block" (plist-get args :class)))
                              " ")))
     (format "<div class='%s'>%s</div>"
