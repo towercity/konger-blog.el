@@ -36,8 +36,8 @@
          (comment (or (plist-get args :comment) ""))
          (styles (if (plist-get args :styles?)
                               (konger-blog-get-style-tag)
-                            ""))
-         (book-html (konger-blog-make-block (format
+                            "")))
+        (konger-blog-make-block (format
                                              "<div class='cover'>
     <img src='%s' alt='cover-img'>
   </div>
@@ -51,7 +51,6 @@
       %s
     </div>
   </div>%s" cover-img title author start-date comment styles) :class "book-block")))
-    book-html))
 
 (defun konger-blog-make-block (content &rest args)
   "Create a block element containg CONTENT, with settings in ARGS."
