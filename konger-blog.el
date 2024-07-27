@@ -35,8 +35,7 @@
          (start-date (or (plist-get args :start-date) ""))
          (comment (or (plist-get args :comment) ""))
          (styles (if (plist-get args :styles?)
-                              (konger-blog-get-style-tag)
-                            "")))
+                     (konger-blog-get-style-tag) "")))
         (konger-blog-make-block (format
                                              "<div class='cover'>
     <img src='%s' alt='cover-img'>
