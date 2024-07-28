@@ -1,12 +1,6 @@
-body {
-    --color-background: #ffecff;
-    --color-foreground: #01008c;
-}
-
 .block {
-    border: 1px solid var(--color-foreground);
-    background: var(--color-background);
-    filter: drop-shadow(.3em .3em 0em var(--color-foreground));
+    border: 1px solid #ffecff;
+    background: #01008c;
 }
 
 .book-block {
@@ -20,4 +14,8 @@ body {
 
 .book-block .info h3 {
     margin: 0;
+}
+
+.book-block .info strong {
+    filter: drop-shadow(.3em .3em 0em red);
 }
