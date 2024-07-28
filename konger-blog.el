@@ -65,7 +65,6 @@
   <div class='info'>
     <h3><strong>%s</strong> by <strong>%s</strong></h3>
     <div class='logbook'>
-      <strong>started:</strong>
       %s
     </div>
     <div class='comment'>
@@ -76,8 +75,12 @@
 
 (defun konger-blog-get-book-date-markup (date)
   "Get the html markup for logbook item DATE."
-  (split-string date " - ")
-  )
+  (let* ((dates-list (split-string date " - " t)))
+    (cl-case (length dates-list)
+      (1 (format "<strong>started: </strong>%s" (pop dates-list)))
+      (2 (format "<strong>read: </strong>%s through %s"
+                 (pop dates-list) (pop dates-list)))
+      (t ""))))
 
 (defun konger-blog-make-block (content &rest args)
   "Create a block element containg CONTENT, with settings in ARGS."
