@@ -27,17 +27,26 @@
     (message (gethash 'tags (car book-hash)))
     ))
 
+;; TODO: pull in date, content
+;; TODO: how to do multiple reads? likely we'll need to do some workarounds
 (defun konger-blog-get-book-block-from-file (file &rest args)
   "Create a book block from FILE, with settings ARGS."
   (interactive "fWhich file: ")
-  (let* ((book-hash (obsidian--file-front-matter file)))
+  (let* ((book-hash (obsidian--file-front-matter file))
+         (logbook (or (gethash 'logbook book-hash) [])))
     ;; make sure we have a book before we go, ok
     (if (seq-contains-p (gethash 'tags book-hash) "book")
-        (konger-blog-make-book-block :cover (gethash 'cover book-hash)
-                                     :title (gethash 'title book-hash)
-                                     :author (gethash 'author book-hash)
-                                     :start-date (gethash 'start-date book-hash)
-                                     :styles? (plist-get args :styles?))
+        (konger-blog-make-book-block
+         :cover (gethash 'cover book-hash)
+         :title (gethash 'title book-hash)
+         :author (konger-blog-combine-array-commas-or-and
+                  (mapcar #'konger-blog-handle-obsidian-links
+                          (gethash 'author book-hash)))
+         :date (konger-blog-get-book-date-markup
+                (seq-elt logbook
+                         (or (plist-get args :read-number)
+                             (- (length logbook) 1))))
+         :styles? (or (plist-get args :styles?) t))
       (user-error "%s" "Not a book note"))))
 
 (defun konger-blog-make-book-block (&rest args)
@@ -45,7 +54,7 @@
   (let* ((cover-img (or (plist-get args :cover) ""))
          (title (or (plist-get args :title) ""))
          (author (or (plist-get args :author) ""))
-         (start-date (or (plist-get args :start-date) ""))
+         (date (or (plist-get args :date) ""))
          (comment (or (plist-get args :comment) ""))
          (styles (if (plist-get args :styles?)
                      (konger-blog-get-style-tag) "")))
@@ -62,7 +71,13 @@
     <div class='comment'>
       %s
     </div>
-  </div>%s" cover-img title author start-date comment styles) :class "book-block")))
+  </div>%s" cover-img title author date comment styles) :class "book-block")
+))
+
+(defun konger-blog-get-book-date-markup (date)
+  "Get the html markup for logbook item DATE."
+  (split-string date " - ")
+  )
 
 (defun konger-blog-make-block (content &rest args)
   "Create a block element containg CONTENT, with settings in ARGS."
@@ -75,6 +90,20 @@
   "Return the content of the local style.css file, wrapped in a <style> tag."
   (format "<style>%s</style>"
           (f-read "~/.emacs.d/my-packages/konger-blog/style.css")))
+
+(defun konger-blog-combine-array-commas-or-and (array)
+  "Combine array ARRAY (not a list!) into a string.
+Will use either the word 'and' or commas, depending on number of items in array."
+  (cl-case (length array)
+    (0 "")
+    (1 (aref array 0))
+    (2 (string-join array " and "))
+    (t (string-join array ","))))
+
+(defun konger-blog-handle-obsidian-links (string)
+  "Handle the obsidian link syntax in STRING."
+  ;; TODO: do some actual work here, lol. atm, just strips
+  (replace-regexp-in-string "\\[\\[\\|\\]\\]" "" string))
 
 (provide 'konger-blog)
 
