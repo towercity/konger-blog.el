@@ -12,8 +12,7 @@
 
 (setq konger-blog-obsidian-dir "~/Documents/Writing"
       konger-blog-media-dir (concat konger-blog-obsidian-dir "/media")
-      konger-blog-book-dir (concat konger-blog-media-dir "/book")
-      )
+      konger-blog-book-dir (concat konger-blog-media-dir "/book"))
 
 ;; unfinsihed: only gets the hash for books
 ;; atm this is like... USELESS. its HELLA SLOW. can we speed this process up
@@ -95,13 +94,15 @@
           (f-read "~/.emacs.d/my-packages/konger-blog/style.css")))
 
 (defun konger-blog-combine-array-commas-or-and (array)
-  "Combine array ARRAY (not a list!) into a string.
-Will use either the word 'and' or commas, depending on number of items in array."
-  (cl-case (length array)
-    (0 "")
-    (1 (aref array 0))
-    (2 (string-join array " and "))
-    (t (string-join array ","))))
+  "Combine array ARRAY into a string.
+Will use either the word \"and\" or commas, depending on number of items in array."
+  (if (arrayp array)
+      (cl-case (length array)
+        (0 "")
+        (1 (aref array 0))
+        (2 (string-join array " and "))
+        (t (string-join array ",")))
+    (car array)))
 
 (defun konger-blog-handle-obsidian-links (string)
   "Handle the obsidian link syntax in STRING."
