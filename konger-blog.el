@@ -45,7 +45,10 @@
                 (seq-elt logbook
                          (or (plist-get args :read-number)
                              (- (length logbook) 1))))
-         :styles? (or (plist-get args :styles?) t))
+         :styles? (or (plist-get args :styles?) t)
+         :comment (or (plist-get args :comment)
+                      (konger-blog-handle-obsidian-links
+                       (konger-blog-get-review-text file))))
       (user-error "%s" "Not a book note"))))
 
 (defun konger-blog-make-book-block (&rest args)
@@ -108,6 +111,32 @@ Will use either the word \"and\" or commas, depending on number of items in arra
   "Handle the obsidian link syntax in STRING."
   ;; TODO: do some actual work here, lol. atm, just strips
   (replace-regexp-in-string "\\[\\[\\|\\]\\]" "" string))
+
+(defun konger-blog-get-book-block (bookname)
+  "Get book block BOOKNAME.
+Presumed to be held in the correct media file, and already a bookfile."
+  (let ((bookfile (concat konger-blog-book-dir "/" bookname ".md")))
+    (konger-blog-get-book-block-from-file bookfile)))
+
+(defun konger-blog-get-book-for-cohost (bookname)
+  "Get the book block for BOOKNAME for cohost."
+  (shell-command-to-string (format "echo \"%s\" | %s"
+                                   (konger-blog-get-book-block bookname)
+                                   "~/.cargo/bin/css-inline")))
+
+(defun konger-blog-get-review-text (file)
+  "Gather the review text from book note FILE."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (let* ((rev-regex "# rev")
+           (review-start (progn
+                           (re-search-forward rev-regex)
+                           (forward-line)
+                           (point)))
+           (review-end (progn
+                         (outline-next-heading)
+                         (point))))
+      (buffer-substring review-start review-end))))
 
 (provide 'konger-blog)
 

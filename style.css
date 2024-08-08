@@ -5,11 +5,17 @@
 
 .book-block {
     display: flex;
-    gap: 1em;
+    gap: 0.5em;
+}
+
+.book-block .cover {
+    width: 25%;
 }
 
 .book-block .info {
     padding-block: 1em;
+    width: 75%;
+    color: white;
 }
 
 .book-block .info h3 {
